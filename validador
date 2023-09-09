@@ -1,0 +1,65 @@
+import re
+
+
+def valida(cnpj):
+    cnpj = apenas_numeros(cnpj)
+
+    try:
+        if sequencia(cnpj):
+            print('sequencia invalida')
+            return False
+
+    except Exception:
+        return False
+
+    try:
+        novocnpj = caldigito(cnpj=cnpj, digito=1)
+        novocnpj = caldigito(cnpj=novocnpj, digito=2)
+    except Exception as e:
+        return False
+
+    if novocnpj == cnpj:
+        return True
+    else:
+        return False
+
+
+def caldigito(cnpj, digito):
+    if digito == 1:
+        regre = REGRESSIVOS[1:]
+        novocnpj = cnpj[:-2]
+    elif digito == 2:
+        regre = REGRESSIVOS
+        novocnpj = cnpj
+    else:
+        return None
+    tot = 0
+    for indice, regressivo in enumerate(regre):
+        tot += int(cnpj[indice]) * regressivo
+    digito = 11 - (tot % 11)
+    digito = digito if digito <= 9 else 0
+
+    return f'{novocnpj}{digito}'
+
+
+def sequencia(cnpj):
+    sequencia1 = cnpj[0] * len(cnpj)
+
+    if sequencia1 == cnpj:
+        return True
+    else:
+        return False
+
+
+def apenas_numeros(cnpj):
+    return re.sub(r'[^0-9]', '', cnpj)
+
+
+REGRESSIVOS = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+cnpj1 = '04.252.011/0001-10'
+
+
+if valida(cnpj1):
+    print(f'{cnpj1} é valido')
+else:
+    print(f'{cnpj1} é invalido')
